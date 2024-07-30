@@ -1,0 +1,166 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('image/BMW-M3.webp'); /* Remplace 'car-background.jpg' par le chemin de ton image */
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    filter: blur(3px); /* Floute l'image pour mettre en avant la boîte de connexion */
+}
+
+.header {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.2); /* Ajoute une ombre seulement en bas */
+}
+
+.header img {
+    max-height: 50px; /* Ajuste la hauteur du logo selon tes besoins */
+}
+
+.container {
+    width: 400px;
+    background: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour mettre en valeur le formulaire */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    border-radius: 10px;
+    margin-top: 100px; /* Ajoute de l'espace pour la bande horizontale */
+}
+
+.form-container {
+    text-align: center;
+    width: 100%; /* Fixe la largeur du conteneur */
+}
+
+.form-toggle {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.form-toggle button {
+    padding: 10px;
+    border: none;
+    background-color: #e6e6e6;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    outline: none;
+    cursor: pointer;
+    margin: 0 5px;
+    border-radius: 5px;
+    transition: flex-grow 0.3s ease, background-color 0.3s ease; /* Ajoute la transition pour flex-grow et background-color */
+    flex-grow: 1; /* Par défaut, tous les boutons ont une croissance égale */
+}
+
+.form-toggle button:hover {
+    flex-grow: 10; /* Le bouton se dilate en largeur lorsqu'on le survole */
+    background-color: #ddd; /* Changement de couleur lors du survol */
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form input,
+.form select {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; /* Assure que les inputs prennent toute la largeur */
+    box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
+}
+
+.phone-container {
+    display: flex;
+    width: 100%;
+}
+
+.phone-container select {
+    width: 40%;
+    margin-right: 10px;
+}
+
+.phone-container input {
+    width: 60%;
+}
+
+.form button {
+    position: relative;
+    padding: 10px;
+    border: none;
+    background-color: #3a7fc1;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+    width: 50%;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 1.0s ease; /* Transition pour changer la couleur du texte */
+}
+
+.form button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background-color: #2e6497;
+    z-index: -1;
+    transition: transform 0.5s ease, left 0.5s ease;
+    transform: scaleX(0);
+    border-radius: 5px;
+}
+
+.form button:hover::before {
+    transform: scaleX(2); /* Dilate le fond horizontalement */
+    left: 0;
+}
+
+.form button:hover {
+    color: white; /* Assure que la couleur du texte reste blanche */
+}
+
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input {
+    padding-right: 40px; /* Ajoute un padding pour que le texte ne passe pas sous l'icône */
+}
+
+.password-container img {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+}

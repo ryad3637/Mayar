@@ -1,0 +1,418 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('image/Top-5-German-Car-Brands1564100408.png');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    filter: blur(3px);
+    position: fixed;
+}
+
+.background-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    z-index: 1;
+}
+
+/* HEADER */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    margin-right: 45px;
+}
+
+.logo img {
+    height: 50px;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+
+/* Toggle Menu Button */
+.menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    padding: 0;
+    margin-right: 20px;
+    z-index: 1001;
+    transition: transform 0.3s;
+}
+
+.menu-button:hover {
+    transform: translateX(-5px);
+}
+
+.menu-button .bar {
+    width: 100%;
+    height: 3px;
+    background-color: #000;
+    transition: transform 0.3s;
+}
+
+/* Sliding Menu */
+.menu {
+    position: fixed;
+    top: 80px;
+    right: -250px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 1000;
+    border-radius: 5px;
+    transition: right 0.3s ease;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    margin: 10px 0;
+    transition: transform 0.3s;
+}
+
+.menu a:hover {
+    transform: translateX(5px);
+    color: #2e6497;
+}
+
+.menu .separator {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    width: 80%;
+    align-self: center;
+}
+
+/* Show the menu when the 'open' class is added */
+.menu.open {
+    right: 20px;
+}
+
+/* FORM STYLES */
+.main {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 100px;
+}
+
+.form-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin: 100px auto;
+    text-align: left;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input[type="text"], input[type="number"], input[type="date"], select, textarea, input[type="file"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.car-features label {
+    display: inline-block;
+    width: 48%;
+    margin-bottom: 10px;
+}
+
+/* BUTTON STYLES */
+button {
+    position: relative;
+    padding: 10px;
+    border: none;
+    background-color: #3a7fc1;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 1.0s ease;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background-color: #2e6497;
+    z-index: -1;
+    transition: transform 0.5s ease, left 0.5s ease;
+    transform: scaleX(0);
+    border-radius: 5px;
+}
+
+button:hover::before {
+    transform: scaleX(2);
+    left: 0;
+}
+
+button:hover {
+    color: white;
+}
+
+.photo-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.photo-preview .photo-container {
+    position: relative;
+    display: inline-block;
+}
+
+.photo-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.photo-preview .remove-photo {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    display: none;
+}
+
+.photo-container:hover .remove-photo {
+    display: flex;
+}
+
+.progress-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 20px;
+    width: 0;
+    background-color: #007bff;
+    transition: width 0.3s;
+}
+
+.word-count-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+textarea:invalid {
+    border-color: red;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 20px;
+    display: none;
+}
+
+/* FORM ROW */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+.form-section.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+.form-section.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+/* FOOTER */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.footer-section {
+    flex: 1;
+    margin: 10px;
+    min-width: 200px;
+}
+
+.footer-section h3 {
+    border-bottom: 2px solid #3a7fc1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #3a7fc1;
+}
+
+.social-media {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.social-media img {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s;
+}
+
+.social-media img:hover {
+    transform: scale(1.1);
+}
+
+.footer-bottom {
+    background-color: #222;
+    padding: 10px 0;
+    margin-top: 20px;
+    color: #fff;
+}
