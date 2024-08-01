@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,33 +9,44 @@
 <body>
     <div class="background-image"></div>
 
-    <div class="header">
-        <img src="image/LOGO-3_2.png" alt="Logo de MAYAR">
-    </div>
-
-    <div class="container">
-        <div class="form-container">
-            <div class="form-toggle">
-                <button id="signup-toggle" onclick="toggleForm('signup')">Inscription</button>
-                <button id="login-toggle" onclick="toggleForm('login')">Connexion</button>
-                <button id="guest-toggle" onclick="continueAsGuest()">Continuer en tant qu'invité</button>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="image/LOGO-3_2.png" alt="Logo de MAYAR">
             </div>
-            <form id="login-form" class="form" style="display: none;" onsubmit="login(event)">
-                <h2>Connexion</h2>
-                <input type="email" name="email" placeholder="Email" required>
-                <div class="password-container">
-                    <input type="password" name="password" placeholder="Mot de passe" required id="login-password">
-                    <img src="image/show.png" alt="Voir le mot de passe" id="toggle-login-password">
+            <button class="menu-button" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </button>
+        </div>
+    </header>
+    <nav class="menu">
+        <a href="index.html">Accueil</a>
+        <a href="#" onclick="toggleForm('login')">Connexion</a>
+        <a href="#" onclick="toggleForm('signup')">Inscription</a>
+        <a href="#">Devenir Hôte</a>
+        <div class="separator"></div>
+        <a href="#">Support</a>
+    </nav>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form id="signup-form">
+                <h1>Créer un compte</h1>
+                <div class="name-container">
+                    <input type="text" name="name" placeholder="Nom" required>
+                    <input type="text" name="prenom" placeholder="Prénom" required>
                 </div>
-                <button type="submit">Se connecter</button>
-            </form>
-            <form id="signup-form" class="form" style="display: none;" onsubmit="signup(event)">
-                <h2>Inscription</h2>
-                <input type="text" name="name" placeholder="Nom" required>
-                <input type="text" name="prenom" placeholder="Prénom" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+                <div class="date-container">
+                    <label for="date-naissance" id="date-label">Date de naissance :</label>
+                    <input type="date" name="birthdate" id="date-naissance" required>
+                </div>
                 <div class="phone-container">
                     <select name="country_code" required>
-                        <option value="" disabled selected>Indicatif du pays</option>
+                        <option value="" disabled selected>Indicatif</option>
                         <option value="+1">+1 (USA, Canada)</option>
                         <option value="+7">+7 (Russia)</option>
                         <option value="+20">+20 (Egypt)</option>
@@ -238,20 +249,45 @@
                         <option value="+995">+995 (Georgia)</option>
                         <option value="+996">+996 (Kyrgyzstan)</option>
                         <option value="+998">+998 (Uzbekistan)</option>
+
                     </select>
                     <input type="tel" name="phone" placeholder="Numéro de téléphone" required>
                 </div>
-                <input type="email" name="email" placeholder="Email" required>
-                <div class="password-container">
-                    <input type="password" name="password" placeholder="Mot de passe" required id="signup-password">
-                    <img src="image/show.png" alt="Voir le mot de passe" id="toggle-signup-password">
-                </div>
-                <input type="date" name="birthdate" placeholder="Date de naissance" required>
                 <input type="text" name="license" placeholder="Numéro de permis de conduire" required>
-                <button type="submit">S'inscrire</button>
+                <button class="btn-anime" type="submit">S'inscrire</button>
             </form>
         </div>
+        <div class="form-container sign-in">
+            <form id="login-form">
+                <h1>Connectez vous</h1>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+                <a href="#">Mot de passe oublié?</a>
+                <button class="btn-anime" type="submit">Connexion</button>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Register with your personal details to use all of site features</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2024 Mayar. Tous droits réservés.</p>
+        </div>
+    </footer>
+    
     <script src="PageConnexion.js"></script>
 </body>
 </html>

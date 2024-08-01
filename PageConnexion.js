@@ -1,89 +1,80 @@
-function toggleForm(form) {
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-    const guestToggle = document.getElementById('guest-toggle');
-    const signupToggle = document.getElementById('signup-toggle');
-    const loginToggle = document.getElementById('login-toggle');
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('container');
+    const registerBtn = document.getElementById('register');
+    const loginBtn = document.getElementById('login');
 
-    if (form === 'login') {
-        loginForm.style.display = 'block';
-        signupForm.style.display = 'none';
-        loginToggle.style.backgroundColor = '#ddd';
-        signupToggle.style.backgroundColor = '#eee';
-        guestToggle.style.backgroundColor = '#eee';
-    } else if (form === 'signup') {
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'block';
-        loginToggle.style.backgroundColor = '#eee';
-        signupToggle.style.backgroundColor = '#ddd';
-        guestToggle.style.backgroundColor = '#eee';
-    }
-}
-
-function continueAsGuest() {
-    alert("Continuer en tant qu'invité");
-    window.location.href = "index.php";
-}
-
-function togglePasswordVisibility(passwordInputId, toggleIconId) {
-    const passwordInput = document.getElementById(passwordInputId);
-    const toggleIcon = document.getElementById(toggleIconId);
-
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.src = 'image/hide.png';
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.src = 'image/show.png';
-    }
-}
-
-document.getElementById('toggle-login-password').addEventListener('click', function() {
-    togglePasswordVisibility('login-password', 'toggle-login-password');
-});
-
-document.getElementById('toggle-signup-password').addEventListener('click', function() {
-    togglePasswordVisibility('signup-password', 'toggle-signup-password');
-});
-
-function signup(event) {
-    event.preventDefault();
-    const form = document.getElementById('signup-form');
-    const data = new FormData(form);
-
-    fetch('/api/signup', {
-        method: 'POST',
-        body: JSON.stringify(Object.fromEntries(data)),
-        headers: { 'Content-Type': 'application/json' }
-    }).then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        if (data.message === 'Inscription réussie') {
-            toggleForm('login');
-        }
-    }).catch(error => {
-        console.error('Error:', error);
+    registerBtn.addEventListener('click', () => {
+        container.classList.add("active");
+        document.querySelector('.form-container.sign-up h1').textContent = 'Créer un compte';  // Update the text to 'Créer un compte'
+        toggleForm('signup-form');
     });
-}
 
-function login(event) {
-    event.preventDefault();
-    const form = document.getElementById('login-form');
-    const data = new FormData(form);
-
-    fetch('/api/login', {
-        method: 'POST',
-        body: JSON.stringify(Object.fromEntries(data)),
-        headers: { 'Content-Type': 'application/json' }
-    }).then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        if (data.message === 'Connexion réussie') {
-            window.location.href = "index.php";
-        }
-    }).catch(error => {
-        console.error('Error:', error);
+    loginBtn.addEventListener('click', () => {
+        container.classList.remove("active");
+        document.querySelector('.form-container.sign-in h1').textContent = 'Connectez vous';  // Update the text to 'Connectez vous'
+        toggleForm('login-form');
     });
-}
 
-toggleForm('login');
+    function toggleMenu() {
+        const menu = document.querySelector('nav.menu');
+        menu.classList.toggle('open');
+    }
+
+    function toggleForm(form) {
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+
+        if (form === 'login-form') {
+            loginForm.style.display = 'flex';
+            signupForm.style.display = 'none';
+        } else if (form === 'signup-form') {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'flex';
+        }
+    }
+
+    function signup(event) {
+        event.preventDefault();
+        const form = document.getElementById('signup-form');
+        const data = new FormData(form);
+
+        fetch('/api/signup', {
+            method: 'POST',
+            body: JSON.stringify(Object.fromEntries(data)),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.message === 'Inscription réussie') {
+                toggleForm('login-form');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function login(event) {
+        event.preventDefault();
+        const form = document.getElementById('login-form');
+        const data = new FormData(form);
+
+        fetch('/api/login', {
+            method: 'POST',
+            body: JSON.stringify(Object.fromEntries(data)),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.message === 'Connexion réussie') {
+                window.location.href = "index.php";
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    document.getElementById('signup-form').addEventListener('submit', signup);
+    document.getElementById('login-form').addEventListener('submit', login);
+
+    toggleForm('login-form');
+});

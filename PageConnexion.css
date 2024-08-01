@@ -1,5 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
 body {
-    font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     display: flex;
     justify-content: center;
@@ -16,99 +24,146 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('image/BMW-M3.webp'); /* Remplace 'car-background.jpg' par le chemin de ton image */
+    background-image: url('image/M3-M2.jpg');
     background-size: cover;
     background-position: center;
     z-index: -1;
-    filter: blur(3px); /* Floute l'image pour mettre en avant la boîte de connexion */
+    filter: blur(3px);
 }
 
 .header {
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    text-align: center;
-    padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px 20px;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 2;
-    box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.2); /* Ajoute une ombre seulement en bas */
-}
-
-.header img {
-    max-height: 50px; /* Ajuste la hauteur du logo selon tes besoins */
-}
-
-.container {
-    width: 400px;
-    background: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour mettre en valeur le formulaire */
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-    z-index: 1;
-    border-radius: 10px;
-    margin-top: 100px; /* Ajoute de l'espace pour la bande horizontale */
-}
-
-.form-container {
-    text-align: center;
-    width: 100%; /* Fixe la largeur du conteneur */
-}
-
-.form-toggle {
+    box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.2);
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-
-.form-toggle button {
-    padding: 10px;
-    border: none;
-    background-color: #e6e6e6;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    outline: none;
-    cursor: pointer;
-    margin: 0 5px;
-    border-radius: 5px;
-    transition: flex-grow 0.3s ease, background-color 0.3s ease; /* Ajoute la transition pour flex-grow et background-color */
-    flex-grow: 1; /* Par défaut, tous les boutons ont une croissance égale */
-}
-
-.form-toggle button:hover {
-    flex-grow: 10; /* Le bouton se dilate en largeur lorsqu'on le survole */
-    background-color: #ddd; /* Changement de couleur lors du survol */
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
 }
 
-.form input,
-.form select {
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%; /* Assure que les inputs prennent toute la largeur */
-    box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
-}
-
-.phone-container {
+.header-content {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
 }
 
-.phone-container select {
-    width: 40%;
-    margin-right: 10px;
+.header img {
+    max-height: 50px;
 }
 
-.phone-container input {
-    width: 60%;
+.menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    padding: 0;
+    z-index: 1001;
+    transition: transform 0.3s;
 }
 
-.form button {
+.menu-button:hover {
+    transform: translateX(-5px);
+}
+
+.menu-button .bar {
+    width: 100%;
+    height: 3px;
+    background-color: #000;
+    transition: transform 0.3s;
+}
+
+.menu {
+    position: fixed;
+    top: 80px;
+    right: -250px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 1000;
+    border-radius: 5px;
+    transition: right 0.3s ease;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    margin: 10px 0;
+    transition: transform 0.3s;
+}
+
+.menu a:hover {
+    transform: translateX(5px);
+    color: #2e6497;
+}
+
+.menu .separator {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    width: 80%;
+    align-self: center;
+}
+
+.menu.open {
+    right: 20px;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    width: 768px;
+    max-width: 100%;
+    min-height: 480px;
+}
+
+.container p {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 20px 0;
+}
+
+.container span {
+    font-size: 12px;
+}
+
+.container a {
+    color: #333;
+    font-size: 13px;
+    text-decoration: none;
+    margin: 15px 0 10px;
+}
+
+.hidden {
+    background-color: #4591d8;
+    color: #fff;
+    font-size: 12px;
+    padding: 10px 45px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.btn-anime {
     position: relative;
     padding: 10px;
     border: none;
@@ -120,10 +175,10 @@ body {
     width: 50%;
     overflow: hidden;
     z-index: 1;
-    transition: color 1.0s ease; /* Transition pour changer la couleur du texte */
+    transition: color 1.0s ease;
 }
 
-.form button::before {
+.btn-anime::before {
     content: '';
     position: absolute;
     top: 0;
@@ -137,30 +192,211 @@ body {
     border-radius: 5px;
 }
 
-.form button:hover::before {
-    transform: scaleX(2); /* Dilate le fond horizontalement */
+.btn-anime:hover::before {
+    transform: scaleX(2);
     left: 0;
 }
 
-.form button:hover {
-    color: white; /* Assure que la couleur du texte reste blanche */
+.btn-anime:hover {
+    color: white;
 }
 
-.password-container {
-    position: relative;
+.container button.hidden {
+    background-color: transparent;
+    border-color: #fff;
+}
+
+.container #login-form {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    height: 100%;
+}
+
+.container input,
+.phone-container select {
+    background-color: #eee;
+    border: none;
+    margin: 5px 0;
+    padding: 9px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.phone-container {
+    display: flex;
+    gap: 10px;
+}
+
+.phone-container select {
+    width: 40%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.phone-container input {
+    width: 60%;
+}
+
+.name-container {
+    display: flex;
+    gap: 10px;
+}
+
+.name-container input {
     width: 100%;
 }
 
-.password-container input {
-    padding-right: 40px; /* Ajoute un padding pour que le texte ne passe pas sous l'icône */
+#date-label {
+    font-size: 12px;
+    margin-left: 14px;
 }
 
-.password-container img {
+.date-container {
+    width: 100%;
+}
+
+.form-container {
     position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+}
+
+.sign-in {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.container.active .sign-in {
+    transform: translateX(100%);
+}
+
+.sign-up {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+.container.active .sign-up {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: move 0.6s;
+}
+
+@keyframes move {
+    0%, 49.99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100% {
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+.toggle-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    border-radius: 150px 0 0 100px;
+    z-index: 1000;
+}
+
+.container.active .toggle-container {
+    transform: translateX(-100%);
+    border-radius: 0 150px 100px 0;
+}
+
+.toggle {
+    background-color: #3a7fc1;
+    height: 100%;
+    background: linear-gradient(to right, #8fc5f7, #3a7fc1);
+    color: #fff;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+
+.container.active .toggle {
+    transform: translateX(50%);
+}
+
+.toggle-panel {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px;
+    text-align: center;
+    top: 0;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+
+.toggle-left {
+    transform: translateX(-200%);
+}
+
+.container.active .toggle-left {
+    transform: translateX(0);
+}
+
+.toggle-right {
+    right: 0;
+    transform: translateX(0);
+}
+
+.container.active .toggle-right {
+    transform: translateX(200%);
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-container.sign-up
+{                    
+    display: flex;
+}
+element.style {
+    display: flex;
 }
