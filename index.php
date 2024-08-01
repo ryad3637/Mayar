@@ -30,7 +30,7 @@ $pdo = getConnection();
 $stmt = $pdo->query("SELECT * FROM Vehicules");
 $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
+// s
 
 ?>
 
