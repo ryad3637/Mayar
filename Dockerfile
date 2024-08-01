@@ -1,31 +1,24 @@
 FROM php:8.1-apache
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y \
     libzip-dev \
     zip \
     gnupg2 \
     unixodbc-dev \
     git \
-    libssl-dev  \
-    && docker-php-ext-install zip
+    libssl-dev \
+    default-mysql-client \
+    python3 \
+    python3-pip \
+    python3-venv && \
+    docker-php-ext-install zip pdo pdo_mysql && \
+    a2enmod rewrite headers && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
-
-# Add Microsoft SQL Server drivers
-RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl -sSL https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools \
-    && apt-get clean -y \
-    && echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc \
-    && pecl install sqlsrv pdo_sqlsrv \
-    && docker-php-ext-enable sqlsrv pdo_sqlsrv
-
-# Enable Apache modules
-RUN a2enmod rewrite
-RUN a2enmod headers
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html/
@@ -33,11 +26,16 @@ WORKDIR /var/www/html/
 # Copy application source
 COPY . .
 
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html
+# Install PHP dependencies
+RUN composer install --no-interaction --no-progress --prefer-dist
+
+# Set up Python virtual environment and install dependencies
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install mysql-connector-python python-dotenv
 
 # Expose port 80
 EXPOSE 80
 
-# Set the user to www-data for running the container
-USER www-data
+# Activate virtual environment for all following commands
+ENV PATH="/opt/venv/bin:$PATH"
