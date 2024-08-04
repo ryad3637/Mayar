@@ -225,8 +225,161 @@ get('/api/getVehicles', function() {
     echo json_encode($vehicles);
 });
 
-post('/api/photoProfil', function() {
-    require_once 'uploadProfilePhoto.php';
+post('/api/uploadProfilePhoto', function() {
+    require_once 'config.php';
+
+    header('Content-Type: application/json');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!isset($_FILES['profile_photo'])) {
+            echo json_encode(['message' => 'No file uploaded']);
+            exit();
+        }
+
+        $pdo = getConnection();
+
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Get the current user's ID from the session
+        $userId = $_SESSION['user_id'];
+
+        // Fetch the current photo path from the database
+        $stmt = $pdo->prepare("SELECT photo_profil FROM Utilisateurs WHERE user_id = :user_id");
+        $stmt->execute(['user_id' => $userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            echo json_encode(['message' => 'User not found']);
+            exit();
+        }
+
+        $currentPhotoPath = $user['photo_profil'];
+
+        // Directory where the photos will be stored
+        $targetDir = "uploads/";
+
+        // Ensure the directory exists
+        if (!file_exists($targetDir) && !mkdir($targetDir, 0777, true)) {
+            echo json_encode(['message' => 'Failed to create upload directory']);
+            exit();
+        }
+
+        $targetFile = $targetDir . basename($_FILES['profile_photo']['name']);
+
+        if (move_uploaded_file($_FILES['profile_photo']['tmp_name'], $targetFile)) {
+            // Delete the old photo if it exists
+            if ($currentPhotoPath && file_exists($currentPhotoPath)) {
+                unlink($currentPhotoPath);
+            }
+
+            // Update the database with the new photo path
+            $stmt = $pdo->prepare("UPDATE Utilisateurs SET photo_profil = :photo_profil WHERE user_id = :user_id");
+            $stmt->execute(['photo_profil' => $targetFile, 'user_id' => $userId]);
+
+            echo json_encode(['message' => 'Photo uploaded successfully', 'filePath' => $targetFile]);
+        } else {
+            echo json_encode(['message' => 'Failed to upload photo']);
+        }
+    }
+});
+
+
+
+post('/api/updateProfile', function() {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        sendJsonResponse(['success' => false, 'message' => 'Invalid JSON input']);
+        exit();
+    }
+
+    if (!isset($input['user_id']) || !isset($input['nom']) || !isset($input['prenom']) || !isset($input['email']) || !isset($input['date_naissance']) || !isset($input['numero_permis_conduire']) || !isset($input['numero_telephone'])) {
+        sendJsonResponse(['success' => false, 'message' => 'Tous les champs requis ne sont pas présents.']);
+        exit();
+    }
+
+    $userId = $input['user_id'];
+    $nom = $input['nom'];
+    $prenom = $input['prenom'];
+    $email = $input['email'];
+    $date_naissance = $input['date_naissance'];
+    $numero_permis_conduire = $input['numero_permis_conduire'];
+    $numero_telephone = $input['numero_telephone'];
+
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("UPDATE Utilisateurs SET nom = :nom, prenom = :prenom, email = :email, date_naissance = :date_naissance, numero_permis_conduire = :numero_permis_conduire, numero_telephone = :numero_telephone WHERE user_id = :user_id");
+
+        $success = $stmt->execute([
+            'user_id' => $userId,
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'email' => $email,
+            'date_naissance' => $date_naissance,
+            'numero_permis_conduire' => $numero_permis_conduire,
+            'numero_telephone' => $numero_telephone
+        ]);
+
+        if ($success) {
+            sendJsonResponse(['success' => true, 'message' => 'Profil mis à jour avec succès.']);
+        } else {
+            sendJsonResponse(['success' => false, 'message' => 'Erreur lors de la mise à jour du profil.']);
+        }
+    } catch (PDOException $e) {
+        sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
+});
+
+post('/api/changePassword', function() {
+    require_once 'config.php';
+
+    header('Content-Type: application/json');
+
+    // session_start() is not necessary because it's already started earlier in this script
+
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        echo json_encode(['success' => false, 'message' => 'Invalid JSON input']);
+        exit();
+    }
+
+    if (!isset($input['user_id']) || !isset($input['current_password']) || !isset($input['new_password']) || !isset($input['confirm_password'])) {
+        echo json_encode(['success' => false, 'message' => 'Tous les champs requis ne sont pas présents.']);
+        exit();
+    }
+
+    if ($input['new_password'] !== $input['confirm_password']) {
+        echo json_encode(['success' => false, 'message' => 'Les nouveaux mots de passe ne correspondent pas.']);
+        exit();
+    }
+
+    $userId = $input['user_id'];
+    $currentPassword = $input['current_password'];
+    $newPassword = $input['new_password'];
+
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("SELECT mot_de_passe_hash FROM Utilisateurs WHERE user_id = :user_id");
+        $stmt->execute(['user_id' => $userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || !password_verify($currentPassword, $user['mot_de_passe_hash'])) {
+            echo json_encode(['success' => false, 'message' => 'Mot de passe actuel incorrect.']);
+            exit();
+        }
+
+        $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+        $stmt = $pdo->prepare("UPDATE Utilisateurs SET mot_de_passe_hash = :new_password_hash WHERE user_id = :user_id");
+        $stmt->execute(['new_password_hash' => $newPasswordHash, 'user_id' => $userId]);
+
+        echo json_encode(['success' => true, 'message' => 'Mot de passe mis à jour avec succès.']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
 });
 
 post('/api/createConversation', function() {
@@ -287,6 +440,7 @@ get('/EnregistrerVehicule.php', 'EnregistrerVehicule.php');
 get('/VoitureDetail.php', 'voitureDetail.php');
 get('/Hreservation.php', 'Hreservation.php');
 get('/MonCompte.php', 'MonCompte.php');
+get('/MonVehicule.php', 'MonVehicule.php');
 get('/chat', 'chat.php');
 get('/fetchMessages.php', 'fetchMessages.php');
 
