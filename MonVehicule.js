@@ -7,7 +7,25 @@ $(document).ready(function() {
     }
 
     $('.calendar-button').on('click', function() {
-        $('#calendarModal').css('display', 'block');
+        var reservations = $(this).data('reservations');
+        var events = [];
+
+        if (reservations) {
+            var reservationsArray = reservations.split(';');
+            reservationsArray.forEach(function(reservation) {
+                var dates = reservation.split(',');
+                if (dates.length === 2) {
+                    events.push({
+                        title: 'Réservé',
+                        start: dates[0],
+                        end: dates[1],
+                        color: '#0000ff' // Bleu pour réservé
+                    });
+                }
+            });
+        }
+
+        $('#calendar').fullCalendar('destroy'); // Détruit l'instance du calendrier pour éviter les doublons
         $('#calendar').fullCalendar({
             header: {
                 left: 'prev,next today',
@@ -15,21 +33,10 @@ $(document).ready(function() {
                 right: 'month,agendaWeek,agendaDay'
             },
             editable: false,
-            events: [
-                {
-                    title: 'Réservé',
-                    start: '2024-07-20',
-                    end: '2024-07-22',
-                    color: '#ff0000'
-                },
-                {
-                    title: 'Disponible',
-                    start: '2024-07-23',
-                    end: '2024-07-27',
-                    color: '#00ff00'
-                }
-            ]
+            events: events
         });
+
+        $('#calendarModal').css('display', 'block');
     });
 
     $('.close').on('click', function() {
@@ -70,7 +77,7 @@ $(document).ready(function() {
     });
 });
 
-//Menu
+// Menu
 
 function toggleMenu() {
     const menu = document.querySelector('nav.menu');

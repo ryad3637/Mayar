@@ -1,3 +1,41 @@
+<?php
+require_once 'config.php';
+
+session_start();
+
+// Vérifiez si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header('Location: PageConnexion.php');
+    exit();
+}
+
+$userId = $_SESSION['user_id'];
+
+// Récupérer les informations des véhicules de l'utilisateur
+$pdo = getConnection();
+$stmt = $pdo->prepare("
+    SELECT v.*, GROUP_CONCAT(r.start_date, ',', r.end_date SEPARATOR ';') AS reservations
+    FROM Vehicules v
+    LEFT JOIN reservations r ON v.vehicule_id = r.vehicule_id
+    WHERE v.user_id = :user_id
+    GROUP BY v.vehicule_id
+");
+$stmt->execute(['user_id' => $userId]);
+$vehicules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Récupérer les réservations récentes
+$reservationStmt = $pdo->prepare("
+    SELECT r.*, v.marque, v.modele, u.nom, u.prenom
+    FROM reservations r
+    JOIN Vehicules v ON r.vehicule_id = v.vehicule_id
+    JOIN Utilisateurs u ON r.user_id = u.user_id
+    WHERE v.user_id = :user_id
+    ORDER BY r.start_date DESC
+");
+$reservationStmt->execute(['user_id' => $userId]);
+$reservations = $reservationStmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,9 +59,9 @@
             </button>
         </header>
         <nav class="menu">
-            <a href="index.html">Accueil</a>
-            <a href="#">Connexion</a>
-            <a href="#">Inscritpion</a>
+            <a href="index.php">Accueil</a>
+            <a href="PageConnexion.php">Connexion</a>
+            <a href="#">Inscription</a>
             <a href="#">Devenir Hôte</a>
             <div class="separator"></div>
             <a href="#">Support</a>
@@ -57,39 +95,29 @@
             <section class="vehicle-list">
                 <h2>Vos Véhicules</h2>
                 <div class="card-container" id="vehicleCards">
-                    <div class="card">
-                        <button class="calendar-button">📅</button>
-                        <div class="image-container">
-                            <img src="car1.jpg" alt="BMW X5">
+                    <?php foreach ($vehicules as $vehicule): ?>
+                        <div class="card">
+                            <button class="calendar-button" data-reservations="<?php echo htmlspecialchars($vehicule['reservations']); ?>">📅</button>
+                            <div class="image-container">
+                                <img src="<?php echo htmlspecialchars(json_decode($vehicule['photos'])[0]); ?>" alt="<?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?>">
+                            </div>
+                            <h3><?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?></h3>
+                            <p class="price"><?php echo htmlspecialchars($vehicule['prix_quotidien']); ?> <span>/jour</span></p>
+                            <p>Type: <?php echo htmlspecialchars($vehicule['style']); ?></p>
+                            <p>Statut: Disponible</p>
+                            <div class="card-actions">
+                                <button>Modifier</button>
+                                <button>Supprimer</button>
+                            </div>
                         </div>
-                        <h3>BMW X5</h3>
-                        <p class="price">$72 <span>/jour</span></p>
-                        <p>Type: SUV</p>
-                        <p>Statut: Disponible</p>
-                        <div class="card-actions">
-                            <button>Modifier</button>
-                            <button>Supprimer</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <button class="calendar-button">📅</button>
-                        <div class="image-container">
-                            <img src="car2.jpg" alt="Audi A4">
-                        </div>
-                        <h3>Audi A4</h3>
-                        <p class="price">$65 <span>/jour</span></p>
-                        <p>Type: Sedan</p>
-                        <p>Statut: Loué</p>
-                        <div class="card-actions">
-                            <button>Modifier</button>
-                            <button>Supprimer</button>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <div class="no-vehicles-message" id="noVehiclesMessage">
-                    <p>Vous n'avez aucun véhicule ajouté. Ajoutez un véhicule maintenant et commencez à gagner de l'argent!</p>
-                    <a href="EnregistrerVehicule.html" class="add-vehicle-button">Ajouter Véhicule</a>
-                </div>
+                <?php if (count($vehicules) === 0): ?>
+                    <div class="no-vehicles-message" id="noVehiclesMessage">
+                        <p>Vous n'avez aucun véhicule ajouté. Ajoutez un véhicule maintenant et commencez à gagner de l'argent!</p>
+                        <a href="EnregistrerVehicule.php" class="add-vehicle-button">Ajouter Véhicule</a>
+                    </div>
+                <?php endif; ?>
             </section>
             <section class="recent-bookings">
                 <h2>Réservations Récentes</h2>
@@ -103,16 +131,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>BMW X5</td>
-                            <td>John Doe</td>
-                            <td>2024-07-20</td>
-                            <td>2024-07-22</td>
-                        </tr>
-                        <!-- Ajouter d'autres réservations ici -->
+                        <?php if (count($reservations) > 0): ?>
+                            <?php foreach ($reservations as $reservation): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($reservation['marque'] . ' ' . $reservation['modele']); ?></td>
+                                    <td><?php echo htmlspecialchars($reservation['nom'] . ' ' . $reservation['prenom']); ?></td>
+                                    <td><?php echo htmlspecialchars($reservation['start_date']); ?></td>
+                                    <td><?php echo htmlspecialchars($reservation['end_date']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4">Aucune réservation récente.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
-            </section>            
+            </section>
             <section class="customer-messages">
                 <h2>Messages des Clients</h2>
                 <div class="message">
@@ -126,6 +161,9 @@
                 <div class="modal-content">
                     <span class="close">&times;</span>
                     <div id="calendar"></div>
+                    <div class="legend">
+                        <span class="reserved">Réservé</span>
+                    </div>
                 </div>
             </div>
         </main>
