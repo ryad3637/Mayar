@@ -333,6 +333,7 @@ post('/api/updateProfile', function() {
     }
 });
 
+
 post('/api/changePassword', function() {
     require_once 'config.php';
 
@@ -381,6 +382,48 @@ post('/api/changePassword', function() {
         echo json_encode(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
     }
 });
+
+post('/api/enregistrerReservation', function() {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        sendJsonResponse(['success' => false, 'message' => 'Invalid JSON input']);
+        exit();
+    }
+
+    if (!isset($input['user_id']) || !isset($input['vehicule_id']) || !isset($input['start_date']) || !isset($input['end_date'])) {
+        sendJsonResponse(['success' => false, 'message' => 'Tous les champs requis ne sont pas présents.']);
+        exit();
+    }
+
+    $userId = $input['user_id'];
+    $vehiculeId = $input['vehicule_id'];
+    $startDate = $input['start_date'];
+    $endDate = $input['end_date'];
+    $cancelDate = isset($input['cancel_date']) ? $input['cancel_date'] : null;
+
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("INSERT INTO reservations (user_id, vehicule_id, start_date, end_date, cancel_date) VALUES (:user_id, :vehicule_id, :start_date, :end_date, :cancel_date)");
+
+        $success = $stmt->execute([
+            'user_id' => $userId,
+            'vehicule_id' => $vehiculeId,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'cancel_date' => $cancelDate
+        ]);
+
+        if ($success) {
+            sendJsonResponse(['success' => true, 'message' => 'Réservation enregistrée avec succès.']);
+        } else {
+            sendJsonResponse(['success' => false, 'message' => 'Erreur lors de l\'enregistrement de la réservation.']);
+        }
+    } catch (PDOException $e) {
+        sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
+});
+
 
 post('/api/createConversation', function() {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -443,7 +486,8 @@ get('/MonCompte.php', 'MonCompte.php');
 get('/MonVehicule.php', 'MonVehicule.php');
 get('/chat', 'chat.php');
 get('/fetchMessages.php', 'fetchMessages.php');
-
+get('/ModifierVehicule.php', 'ModifierVehicule.php');
+get('/Paiement.php', 'Paiement.php');
 any('/404','views/404.php');
 
 

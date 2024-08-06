@@ -25,7 +25,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     showSlides(currentSlide);
+
+    const paymentButton = document.getElementById('payment-button');
+    paymentButton.addEventListener('click', () => {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const pickupLocation = document.getElementById('pickup-location').value;
+
+        if (startDate && endDate) {
+            if (isDateRangeAvailable(startDate, endDate)) {
+                window.location.href = `Paiement.php?vehicule_id=${carData.vehicule_id}&start_date=${startDate}&end_date=${endDate}&pickup_location=${pickupLocation}`;
+            } else {
+                alert('La voiture n\'est pas disponible pour les dates sélectionnées.');
+            }
+        } else {
+            alert('Veuillez sélectionner les dates de début et de fin.');
+        }
+    });
 });
+
+function isDateRangeAvailable(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    for (const reservation of reservationsData) {
+        const resStart = new Date(reservation.start_date);
+        const resEnd = new Date(reservation.end_date);
+
+        if ((start >= resStart && start <= resEnd) || (end >= resStart && end <= resEnd)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 let currentSlide = 0;
 

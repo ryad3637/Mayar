@@ -50,26 +50,36 @@ if ($carId) {
                     <button class="carousel-control prev" onclick="prevSlide()">&#10094;</button>
                     <button class="carousel-control next" onclick="nextSlide()">&#10095;</button>
                 </div>
-                <h2 id="car-title"></h2>
-                <p id="car-trips"></p>
-                <p id="car-pickup"></p>
-                <p id="car-savings"></p>
-                <p id="car-originalPrice"></p>
-                <p id="car-totalPrice"></p>
+                <h2 id="car-title"><?php echo $car['marque'] . ' ' . $car['modele']; ?></h2>
+                <p id="car-trips"><?php echo $car['kilometrage']; ?> km</p>
+                <p id="car-pickup"><?php echo $car['adresse']; ?> aéroport</p>
+                <p id="car-savings"><?php echo $car['etat']; ?></p>
+                <p id="car-originalPrice"><?php echo $car['vin']; ?></p>
+                <p id="car-totalPrice"><?php echo $car['prix_quotidien']; ?> $/jour</p>
                 <h3>Description</h3>
-                <p id="car-description"></p>
+                <p id="car-description"><?php echo $car['description']; ?></p>
                 <h3>Caractéristiques</h3>
-                <ul id="car-features"></ul>
+                <ul id="car-features">
+                    <?php foreach (explode(',', $car['caracteristiques']) as $feature) {
+                        echo "<li>" . htmlspecialchars($feature) . "</li>";
+                    } ?>
+                </ul>
             </div>
             <div class="booking-section">
-                <h3>Réserver ce véhicule</h3>
-                <label for="start-date">Début du voyage:</label>
-                <input type="date" id="start-date">
-                <label for="end-date">Fin du voyage:</label>
-                <input type="date" id="end-date">
-                <label for="pickup-location">Lieu de prise en charge et de retour:</label>
-                <input type="text" id="pickup-location" placeholder="Lieu de prise en charge et de retour">
-                <button id="payment-button">Procéder au paiement</button>
+                <form id="booking-form" action="Paiement.php" method="GET">
+                    <h3>Réserver ce véhicule</h3>
+                    <label for="start-date">Début du voyage:</label>
+                    <input type="date" id="start-date" name="start_date" required>
+                    <label for="end-date">Fin du voyage:</label>
+                    <input type="date" id="end-date" name="end_date" required>
+                    <label for="pickup-location">Lieu de prise en charge et de retour:</label>
+                    <input type="text" id="pickup-location" name="pickup_location" value="<?php echo $car['adresse']; ?> aéroport" required>
+                    <!-- Hidden input fields to pass car details -->
+                    <input type="hidden" name="car_id" value="<?php echo $car['vehicule_id']; ?>">
+                    <input type="hidden" name="car_name" value="<?php echo $car['marque'] . ' ' . $car['modele']; ?>">
+                    <input type="hidden" name="daily_price" value="<?php echo $car['prix_quotidien']; ?>">
+                    <button type="submit" id="payment-button">Procéder au paiement</button>
+                </form>
             </div>
         </div>
     </main>

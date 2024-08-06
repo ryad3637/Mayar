@@ -95,23 +95,23 @@ $reservations = $reservationStmt->fetchAll(PDO::FETCH_ASSOC);
             <section class="vehicle-list">
                 <h2>Vos Véhicules</h2>
                 <div class="card-container" id="vehicleCards">
-                    <?php foreach ($vehicules as $vehicule): ?>
-                        <div class="card">
-                            <button class="calendar-button" data-reservations="<?php echo htmlspecialchars($vehicule['reservations']); ?>">📅</button>
-                            <div class="image-container">
-                                <img src="<?php echo htmlspecialchars(json_decode($vehicule['photos'])[0]); ?>" alt="<?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?>">
-                            </div>
-                            <h3><?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?></h3>
-                            <p class="price"><?php echo htmlspecialchars($vehicule['prix_quotidien']); ?> <span>/jour</span></p>
-                            <p>Type: <?php echo htmlspecialchars($vehicule['style']); ?></p>
-                            <p>Statut: Disponible</p>
-                            <div class="card-actions">
-                                <button>Modifier</button>
-                                <button>Supprimer</button>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+    <?php foreach ($vehicules as $vehicule): ?>
+        <div class="card">
+            <button class="calendar-button" data-reservations="<?php echo htmlspecialchars($vehicule['reservations']); ?>">📅</button>
+            <div class="image-container">
+                <img src="<?php echo htmlspecialchars(json_decode($vehicule['photos'])[0]); ?>" alt="<?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?>">
+            </div>
+            <h3><?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?></h3>
+            <p class="price"><?php echo htmlspecialchars($vehicule['prix_quotidien']); ?> <span>/jour</span></p>
+            <p>Type: <?php echo htmlspecialchars($vehicule['style']); ?></p>
+            <p>Statut: Disponible</p>
+            <div class="card-actions">
+            <a href="ModifierVehicule.php?vehicule_id=<?php echo $vehicule['vehicule_id']; ?>">Modifier</a>
+                <button>Supprimer</button>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
                 <?php if (count($vehicules) === 0): ?>
                     <div class="no-vehicles-message" id="noVehiclesMessage">
                         <p>Vous n'avez aucun véhicule ajouté. Ajoutez un véhicule maintenant et commencez à gagner de l'argent!</p>

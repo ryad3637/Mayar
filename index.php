@@ -165,6 +165,44 @@ $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </main>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul class="footer-navigation">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="PageConnexion.html">Connexion</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Devenir Hôte</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li>Adresse: 123 Rue de la Location, Ville, Pays</li>
+                    <li>Téléphone: +1 (514)-000-0000   Email: contact@mayar.com</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Suivez-nous</h3>
+                <ul class="social-media">
+                    <li><a href="#"><img src="image/facebook-icon.png" alt="Facebook"></a></li>
+                    <li><a href="#"><img src="image/Twitter-logo-black.png" alt="Twitter"></a></li>
+                    <li><a href="#"><img src="image/Instagram-icon.png.webp" alt="Instagram"></a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Informations légales</h3>
+                <ul>
+                    <li><a href="#">Termes de service</a></li>
+                    <li><a href="#">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Mayar. Tous droits réservés.</p>
+        </div>
+    </footer>
     <script>
         const cars = <?php echo json_encode($voitures); ?>;
     </script>
