@@ -70,7 +70,7 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </header>
     <nav class="menu">
-        <a href="index.html">Accueil</a>
+        <a href="index.php">Accueil</a>
         <a href="#">Connexion</a>
         <a href="#">Inscription</a>
         <a href="#">Devenir Hôte</a>
@@ -84,19 +84,19 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <img src="<?php echo htmlspecialchars(json_decode($vehicule['photos'])[0]); ?>" alt="<?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?>">
                     <h2><?php echo htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']); ?></h2>
                     <p><?php echo htmlspecialchars($vehicule['finition']); ?></p>
-                    <button onclick="showSection('details')">Détails de la voiture</button>
-                    <button onclick="showSection('availability')">Disponibilité</button>
-                    <button onclick="showSection('photos')">Photos</button>
-                    <button onclick="showSection('pricing')">Prix quotidien</button>
-                    <button onclick="showSection('safety')">Normes de sécurité</button>
-                    <button onclick="showSection('viewOnly')">Ma voiture</button>
+                    <button data-section="details">Détails de la voiture</button>
+                    <button data-section="availabilityForm">Disponibilité</button>
+                    <button data-section="photos">Photos</button>
+                    <button data-section="pricing">Prix quotidien</button>
+                    <button data-section="safety">Normes de sécurité</button>
+                    <button data-section="viewOnly">Ma voiture</button>
                 </div>
             </div>
             <div class="right-section">
                 <!-- Section Détails -->
                 <div class="section" id="details" style="display: none;">
                     <h2>Détails de la voiture</h2>
-                    <form>
+                    <form id="detailsForm">
                         <div class="form-group">
                             <label for="licensePlate">Numéro de plaque d'immatriculation</label>
                             <input type="text" id="licensePlate" name="licensePlate" placeholder="Numéro de plaque d'immatriculation" value="<?php echo htmlspecialchars($vehicule['plaque_immatriculation']); ?>" required>
@@ -104,7 +104,7 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <label>Caractéristiques de la voiture</label>
                             <div class="car-features">
-                                <?php echo htmlspecialchars($vehicule['caracteristiques']); ?>
+                            <textarea id="caracteristiques" name="caracteristiques" required><?php echo htmlspecialchars($vehicule['caracteristiques']); ?></textarea>
                             </div>
                         </div>
                         <div class="form-group">
@@ -119,28 +119,35 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </form>
                 </div>
                 <!-- Section Disponibilité -->
-                <div class="section" id="availability" style="display: none;">
+                <div class="section" id="availabilityForm" style="display: none;">
                     <h2>Disponibilité de la voiture</h2>
                     <form>
                         <div class="form-group">
                             <label for="advanceNotice">Combien de préavis avez-vous besoin avant le début d'un voyage?</label>
-                            <select id="advanceNotice" name="advanceNotice" required>
+                            <select id="advanceNotice" name="advanceNotice" >
                                 <option value=""><?php echo htmlspecialchars($vehicule['preavis']); ?></option>
-                                <!-- Options -->
+                                <option value="12_hours">12 heures</option>
+                                <option value="24_hours">24 heures</option>
+                             <option value="48_hours">48 heures</option>
+                                
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="minTripDuration">Quelle est la durée de voyage minimale que vous accepterez?</label>
-                            <select id="minTripDuration" name="minTripDuration" required>
+                            <select id="minTripDuration" name="minTripDuration" >
                                 <option value=""><?php echo htmlspecialchars($vehicule['duree_minimum']); ?></option>
-                                <!-- Options -->
+                                <option value="1_day">1 jour</option>
+                               <option value="2_days">2 jours</option>
+                              <option value="3_days">3 jours</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="maxTripDuration">Quelle est la durée de voyage maximale que vous accepterez?</label>
-                            <select id="maxTripDuration" name="maxTripDuration" required>
+                            <select id="maxTripDuration" name="maxTripDuration">
                                 <option value=""><?php echo htmlspecialchars($vehicule['duree_maximum']); ?></option>
-                                <!-- Options -->
+                                <option value="1_week">1 semaine</option>
+                                <option value="1_month">1 mois</option>
+                                <option value="6_months">6 mois</option>
                             </select>
                         </div>
                         <div id="calendarContainer">
@@ -151,18 +158,20 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <label for="availabilityToggle" class="toggle-label"></label>
                                 <span id="toggleStatus">Activé</span>
                             </div>
-                        </div>
+                        </div><input type="hidden" name="vehicule_id" value="<?php echo htmlspecialchars($vehicule['vehicule_id']); ?>">
+                        <input type="hidden" name="disponibilite" id="disponibiliteField">
                         <button type="submit">Enregistrer</button>
                     </form>
                 </div>
                 <!-- Section Photos -->
                 <div class="section" id="photos" style="display: none;">
                     <h2>Photos de la voiture</h2>
+                    <div id="photoPreview" class="photo-preview"></div>
                     <form id="photoForm">
                         <div class="form-group">
                             <label for="carPhotos">Ajoutez des photos de votre voiture (maximum 20 photos)</label>
                             <input type="file" id="carPhotos" name="carPhotos" accept="image/*" multiple>
-                            <div id="photoPreview" class="photo-preview"></div>
+                           
                         </div>
                         <button type="submit">Enregistrer</button>
                     </form>
@@ -237,10 +246,10 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="footer-section">
                 <h3>Navigation</h3>
                 <ul>
-                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="index.php">Accueil</a></li>
                     <li><a href="#">Support</a></li>
                     <li><a href="#">Connexion</a></li>
-                    <li><a href="#">Devenir Hôte</a></li>
+                    <li><a href="location.php">Devenir Hôte</a></li>
                 </ul>
             </div>
             <div class="footer-section">

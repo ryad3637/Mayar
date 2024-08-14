@@ -21,18 +21,39 @@ if ($isLoggedIn) {
 }
 
 
-
-
-
 $pdo = getConnection();
 
-// Récupérer les voitures depuis la base de données
-$stmt = $pdo->query("SELECT * FROM Vehicules");
-$voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$location = isset($_GET['location']) ? $_GET['location'] : '';
+$depart = isset($_GET['depart']) ? $_GET['depart'] : '';
+$retour = isset($_GET['retour']) ? $_GET['retour'] : '';
 
-// s
+$voitures = [];
 
+if ($location && $depart && $retour) {
+    $stmt = $pdo->prepare("
+        SELECT v.*
+        FROM Vehicules v
+        WHERE v.adresse LIKE :location
+        AND v.disponibilite = 1
+        AND NOT EXISTS (
+            SELECT 1 
+            FROM reservations r 
+            WHERE r.vehicule_id = v.vehicule_id
+            AND (
+                (r.start_date <= :retour AND r.end_date >= :depart)
+            )
+        )
+    ");
+    $stmt->execute([
+        'location' => '%' . $location . '%',
+        'depart' => $depart,
+        'retour' => $retour
+    ]);
+
+    $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -153,7 +174,7 @@ $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="results" id="results">
                 <?php foreach ($voitures as $index => $voiture): ?>
-                    <div class="result-item" id="car-<?= $index ?>" onclick="showCarDetails(<?= $index ?>)">
+                    <div class="result-item" id="car-<?= $index ?>" onclick="showCarDetails(<?= $voiture['vehicule_id'] ?>)">
                         <img src="<?= htmlspecialchars(json_decode($voiture['photos'])[0]) ?>" alt="<?= htmlspecialchars($voiture['marque']) ?>" class="result-image">
                         <div class="result-details">
                             <h3><?= htmlspecialchars($voiture['marque']) ?> <?= htmlspecialchars($voiture['modele']) ?></h3>

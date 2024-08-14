@@ -456,3 +456,31 @@ footer {
     background-color: #222;
     padding: 5px 0;
 }
+.photo-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.img-container {
+    position: relative;
+    display: inline-block;
+}
+
+.img-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.img-container .remove-photo {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}

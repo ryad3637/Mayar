@@ -467,6 +467,245 @@ get('/api/getMessages', function() {
 
     sendJsonResponse($messages);
 });
+
+post('/api/updateVehicleDetails', function() {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        sendJsonResponse(['success' => false, 'message' => 'Invalid JSON input']);
+        exit();
+    }
+
+    // Vérifiez que les champs requis sont présents
+    if (!isset($input['vehicule_id']) || !isset($input['plaque_immatriculation']) || !isset($input['caracteristiques']) || !isset($input['description'])) {
+        sendJsonResponse(['success' => false, 'message' => 'All fields are required']);
+        exit();
+    }
+
+    $vehiculeId = $input['vehicule_id'];
+    $plaqueImmatriculation = $input['plaque_immatriculation'];
+    $caracteristiques = $input['caracteristiques'];
+    $description = $input['description'];
+
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("
+            UPDATE Vehicules
+            SET plaque_immatriculation = :plaque_immatriculation,
+                caracteristiques = :caracteristiques,
+                description = :description,
+                date_mise_a_jour = CURRENT_TIMESTAMP
+            WHERE vehicule_id = :vehicule_id
+        ");
+
+        $success = $stmt->execute([
+            'plaque_immatriculation' => $plaqueImmatriculation,
+            'caracteristiques' => $caracteristiques,
+            'description' => $description,
+            'vehicule_id' => $vehiculeId
+        ]);
+
+        if ($success) {
+            sendJsonResponse(['success' => true, 'message' => 'Véhicule mis à jour avec succès.']);
+        } else {
+            sendJsonResponse(['success' => false, 'message' => 'Erreur lors de la mise à jour du véhicule.']);
+        }
+    } catch (PDOException $e) {
+        sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
+});
+
+
+post('/api/changerDisponibilite', function() {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        sendJsonResponse(['success' => false, 'message' => 'Invalid JSON input']);
+        exit();
+    }
+
+    // Vérifiez que les champs requis sont présents
+    if (!isset($input['vehicule_id']) || !isset($input['disponibilite'])) {
+        sendJsonResponse(['success' => false, 'message' => 'vehicule_id and disponibilite fields are required']);
+        exit();
+    }
+
+    $vehiculeId = $input['vehicule_id'];
+    $disponibilite = $input['disponibilite'];
+
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("
+            UPDATE Vehicules
+            SET disponibilite = :disponibilite,
+                date_mise_a_jour = CURRENT_TIMESTAMP
+            WHERE vehicule_id = :vehicule_id
+        ");
+
+        $success = $stmt->execute([
+            'disponibilite' => $disponibilite,
+            'vehicule_id' => $vehiculeId
+        ]);
+
+        if ($success) {
+            sendJsonResponse(['success' => true, 'message' => 'Disponibilité du véhicule mise à jour avec succès.']);
+        } else {
+            sendJsonResponse(['success' => false, 'message' => 'Erreur lors de la mise à jour de la disponibilité du véhicule.']);
+        }
+    } catch (PDOException $e) {
+        sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
+});
+
+
+post('/api/updateVehicleAvailability', function() {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        sendJsonResponse(['success' => false, 'message' => 'Invalid JSON input']);
+        exit();
+    }
+
+    // Vérifiez que les champs requis sont présents
+    if (!isset($input['vehicule_id']) || !isset($input['advanceNotice']) || !isset($input['minTripDuration']) || !isset($input['maxTripDuration'])) {
+        sendJsonResponse(['success' => false, 'message' => 'All fields are required']);
+        exit();
+    }
+
+    $vehiculeId = $input['vehicule_id'];
+    $advanceNotice = $input['advanceNotice'];
+    $minTripDuration = $input['minTripDuration'];
+    $maxTripDuration = $input['maxTripDuration'];
+
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("
+            UPDATE Vehicules
+            SET preavis = :advanceNotice,
+                duree_minimum = :minTripDuration,
+                duree_maximum = :maxTripDuration,
+                date_mise_a_jour = CURRENT_TIMESTAMP
+            WHERE vehicule_id = :vehicule_id
+        ");
+
+        $success = $stmt->execute([
+            'advanceNotice' => $advanceNotice,
+            'minTripDuration' => $minTripDuration,
+            'maxTripDuration' => $maxTripDuration,
+            'vehicule_id' => $vehiculeId
+        ]);
+
+        if ($success) {
+            sendJsonResponse(['success' => true, 'message' => 'Disponibilité du véhicule mise à jour avec succès.']);
+        } else {
+            sendJsonResponse(['success' => false, 'message' => 'Erreur lors de la mise à jour de la disponibilité du véhicule.']);
+        }
+    } catch (PDOException $e) {
+        sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
+});
+
+
+
+post('/api/updateVehiclePhotos', function() {
+    // Handle the uploaded files
+    if (!empty($_FILES['newPhotos'])) {
+        $uploadedPhotos = [];
+
+        foreach ($_FILES['newPhotos']['tmp_name'] as $index => $tmpName) {
+            if ($_FILES['newPhotos']['error'][$index] === UPLOAD_ERR_OK) {
+                $uploadDir = '/path/to/upload/directory/';
+                $fileName = basename($_FILES['newPhotos']['name'][$index]);
+                $filePath = $uploadDir . $fileName;
+
+                if (move_uploaded_file($tmpName, $filePath)) {
+                    $uploadedPhotos[] = $filePath;
+                } else {
+                    sendJsonResponse(['success' => false, 'message' => 'Error uploading photos.']);
+                    exit();
+                }
+            }
+        }
+
+        // Update the database with new photos and removed photos
+        try {
+            $pdo = getConnection();
+            $stmt = $pdo->prepare("
+                UPDATE Vehicules
+                SET photos = :photos,
+                    date_mise_a_jour = CURRENT_TIMESTAMP
+                WHERE vehicule_id = :vehicule_id
+            ");
+
+            $allPhotos = array_merge($uploadedPhotos, json_decode($input['removedPhotos']));  // Combine new and existing photos
+            $success = $stmt->execute([
+                'photos' => json_encode($allPhotos),
+                'vehicule_id' => $input['vehicule_id']
+            ]);
+
+            if ($success) {
+                sendJsonResponse(['success' => true, 'message' => 'Photos mises à jour avec succès.']);
+            } else {
+                sendJsonResponse(['success' => false, 'message' => 'Erreur lors de la mise à jour des photos.']);
+            }
+        } catch (PDOException $e) {
+            sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+        }
+    } else {
+        sendJsonResponse(['success' => false, 'message' => 'No photos uploaded.']);
+    }
+});
+
+
+get('/api/getVehicules', function() {
+    $pdo = getConnection();
+
+    // Récupérer les paramètres d'entrée
+    $adresse = isset($_GET['adresse']) ? $_GET['adresse'] : null;
+    $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
+    $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
+
+    if (!$adresse || !$start_date || !$end_date) {
+        sendJsonResponse(['success' => false, 'message' => 'Les paramètres adresse, start_date, et end_date sont requis.']);
+        return;
+    }
+
+    try {
+        // Sélectionner les véhicules disponibles à l'adresse donnée et qui ne sont pas réservés pendant la période spécifiée
+        $stmt = $pdo->prepare("
+            SELECT v.*
+            FROM Vehicules v
+            WHERE v.adresse LIKE :adresse
+            AND v.disponibilite = 1
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM reservations r 
+                WHERE r.vehicule_id = v.vehicule_id
+                AND (
+                    (r.start_date <= :end_date AND r.end_date >= :start_date)
+                )
+            )
+        ");
+
+        $stmt->execute([
+            'adresse' => '%' . $adresse . '%',
+            'start_date' => $start_date,
+            'end_date' => $end_date
+        ]);
+
+        $vehicules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        sendJsonResponse(['success' => true, 'vehicules' => $vehicules]);
+    } catch (PDOException $e) {
+        sendJsonResponse(['success' => false, 'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()]);
+    }
+});
+
+
+
+
+
+
 // chemin routes
 
 get('/', function() use ($isLoggedIn, $profilePhoto) {
