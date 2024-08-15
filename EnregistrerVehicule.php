@@ -205,14 +205,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="text" id="licensePlate" name="licensePlate" placeholder="Numéro de plaque d'immatriculation" required>
                     </div>
                     <div class="form-group">
-                        <label for="state">État</label>
-                        <select id="state" name="state" required>
-                            <option value="">Sélectionnez</option>
-                            <option value="PA">Pennsylvania</option>
-                            <!-- Ajoutez d'autres options ici -->
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>Caractéristiques de la voiture</label>
                         <div class="car-features">
                             <label><input type="checkbox" name="features[]" value="All-wheel drive"> Traction intégrale</label>
@@ -365,7 +357,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <ul class="social-media">
                     <li><a href="#"><img src="image/facebook-icon.png" alt="Facebook"></a></li>
                     <li><a href="#"><img src="image/twitter-icon.png" alt="Twitter"></a></li>
-                    <li><a href="#"><img src="image/instagram-icon.png" alt="Instagram"></a></li>
+                    <li><a href="#"><img src="image/instagram-icon.png.webp" alt="Instagram"></a></li>
                 </ul>
             </div>
             <div class="footer-section">

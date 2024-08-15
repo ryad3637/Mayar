@@ -522,7 +522,10 @@ nav.menu a:hover {
     align-self: center;
 }
 
-
+.selected {
+    background-color: #007bff;
+    color: white;
+}
 
 
 

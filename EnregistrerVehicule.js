@@ -172,7 +172,6 @@ function submitForm() {
         taxes: document.querySelector('input[name="taxes"]:checked').value,
         no_salvage: document.getElementById("no-salvage").checked ? 1 : 0,
         licensePlate: document.getElementById("licensePlate").value,
-        state: document.getElementById("state").value,
         description: document.getElementById("description").value,
         advanceNotice: document.getElementById("advanceNotice").value,
         minTripDuration: document.getElementById("minTripDuration").value,

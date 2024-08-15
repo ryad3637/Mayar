@@ -95,7 +95,7 @@ post('/api/registerVehicle', function() {
     error_log('Received data: ' . print_r($input, true));
 
     // Validate that all expected fields are present
-    $requiredFields = ['user_id', 'address', 'marque','model', 'year', 'vin', 'mileage', 'transmission', 'licensePlate', 'state', 'description', 'advanceNotice', 'minTripDuration', 'maxTripDuration', 'dailyPrice', 'acceptStandards', 'photos'];
+    $requiredFields = ['user_id', 'address', 'marque','model', 'year', 'vin', 'mileage', 'transmission', 'licensePlate', 'description', 'advanceNotice', 'minTripDuration', 'maxTripDuration', 'dailyPrice', 'acceptStandards', 'photos'];
 
     foreach ($requiredFields as $field) {
         if (!isset($input[$field])) {
@@ -132,7 +132,6 @@ post('/api/registerVehicle', function() {
     $taxes = $input['taxes'] === 'Oui' ? 1 : 0;
     $noSalvage = $input['no_salvage'] ? 1 : 0;
     $plaqueImmatriculation = $input['licensePlate'];
-    $etat = $input['state'];
     $caracteristiques = isset($input['features']) ? implode(',', $input['features']) : '';
     $description = $input['description'];
     $preavis = $input['advanceNotice'];
@@ -144,11 +143,11 @@ post('/api/registerVehicle', function() {
 
     $stmt = $pdo->prepare("INSERT INTO Vehicules (
         user_id, adresse, marque, modele, annee, vin, kilometrage, transmission, finition, style, taxes_payees, no_salvage, 
-        plaque_immatriculation, etat, caracteristiques, description, preavis, duree_minimum, duree_maximum, 
+        plaque_immatriculation, caracteristiques, description, preavis, duree_minimum, duree_maximum, 
         prix_quotidien, normes_acceptees, photos
     ) VALUES (
         :user_id, :adresse, :marque, :modele, :annee, :vin, :kilometrage, :transmission, :finition, :style, :taxes_payees, :no_salvage, 
-        :plaque_immatriculation, :etat, :caracteristiques, :description, :preavis, :duree_minimum, :duree_maximum, 
+        :plaque_immatriculation, :caracteristiques, :description, :preavis, :duree_minimum, :duree_maximum, 
         :prix_quotidien, :normes_acceptees, :photos
     )");
 
@@ -167,7 +166,6 @@ post('/api/registerVehicle', function() {
             'taxes_payees' => $taxes,
             'no_salvage' => $noSalvage,
             'plaque_immatriculation' => $plaqueImmatriculation,
-            'etat' => $etat,
             'caracteristiques' => $caracteristiques,
             'description' => $description,
             'preavis' => $preavis,

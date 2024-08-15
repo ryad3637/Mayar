@@ -21,57 +21,40 @@ if ($isLoggedIn) {
 
 $pdo = getConnection();
 
+$prix_min = isset($_GET['prix_min']) ? $_GET['prix_min'] : 10;
+$prix_max = isset($_GET['prix_max']) ? $_GET['prix_max'] : 500;
+$sort_order = isset($_GET['sort_order']) ? $_GET['sort_order'] : 'asc';
 $location = isset($_GET['location']) ? $_GET['location'] : '';
-$depart = isset($_GET['depart']) ? $_GET['depart'] : '';
-$retour = isset($_GET['retour']) ? $_GET['retour'] : '';
+
 
 $voitures = [];
 
-if ($location || $depart || $retour) {
-    $query = "
-        SELECT v.*
-        FROM Vehicules v
-        WHERE v.disponibilite = 1
-    ";
+$params = [
+    'prix_min' => $prix_min,
+    'prix_max' => $prix_max,
+];
+$query = "
+    SELECT v.*
+    FROM Vehicules v
+    WHERE v.disponibilite = 1
+    AND v.prix_quotidien BETWEEN :prix_min AND :prix_max
+";
 
-    $conditions = [];
-    $params = [];
-
-    if ($location) {
-        $conditions[] = "v.adresse LIKE :location";
-        $params['location'] = '%' . $location . '%';
-    }
-
-    if ($depart && $retour) {
-        $conditions[] = "NOT EXISTS (
-            SELECT 1 
-            FROM reservations r 
-            WHERE r.vehicule_id = v.vehicule_id
-            AND (r.start_date <= :retour AND r.end_date >= :depart)
-        )";
-        $params['depart'] = $depart;
-        $params['retour'] = $retour;
-    }
-
-    if ($conditions) {
-        $query .= " AND " . implode(' AND ', $conditions);
-    }
-
-    $stmt = $pdo->prepare($query);
-    $stmt->execute($params);
-
-    $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    // Si aucun champ n'est rempli, on affiche tous les véhicules disponibles
-    $stmt = $pdo->prepare("
-        SELECT v.*
-        FROM Vehicules v
-        WHERE v.disponibilite = 1
-    ");
-    $stmt->execute();
-    $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (!empty($location)) {
+    $query .= " AND v.adresse LIKE :location";
+    $params['location'] = '%' . $location . '%';
 }
+
+// Ajout de l'ordre de tri
+$query .= " ORDER BY v.prix_quotidien $sort_order";
+
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
+
+$voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -153,18 +136,20 @@ if ($location || $depart || $retour) {
                 <button class="filter-button" data-filter="price">Prix par jour</button>
                 <button class="filter-button" data-filter="more">Plus de filtres</button>
                 <div id="sort" class="filter-content">
-                    <p>Pertinence</p>
-                    <p>Prix par jour : faible à élevé</p>
-                    <p>Prix par jour : élevé à faible</p>
-                    <p>Distance</p>
-                    <button class="filter-reset">Réinitialiser</button>
-                    <button class="filter-show">Afficher 200+ résultats</button>
-                </div>
+            <p onclick="setSortOrder('asc', this)">Prix par jour : faible à élevé</p>
+            <p onclick="setSortOrder('desc', this)">Prix par jour : élevé à faible</p>
+            <button class="filter-reset" onclick="resetFilters()">Réinitialiser</button>
+            <button class="filter-show" onclick="searchCars()">Afficher résultats</button>
+        </div>
+
+
+<input type="hidden" id="sortOrder" value="">
                 <div id="price" class="filter-content">
                     <p>10$ - 500$+/jour</p>
-                    <input type="range" min="10" max="500">
+                    <input type="range" min="10" max="500" id="price-range">
+                    <span id="price-value">500$</span>
                     <button class="filter-reset">Réinitialiser</button>
-                    <button class="filter-show">Afficher 200+ résultats</button>
+                    <button class="filter-show">Afficher les résultats</button>
                 </div>
                 <div id="more" class="filter-content">
                     <div>
@@ -192,7 +177,10 @@ if ($location || $depart || $retour) {
                 </div>
             </div>
             <div class="results" id="results">
-                <?php foreach ($voitures as $index => $voiture): ?>
+                <?php if (count($voitures) === 0): ?>
+                    <p>Aucun résultat trouvé pour cette plage de prix.</p>
+                    <?php else: ?>
+                        <?php foreach ($voitures as $index => $voiture): ?>
                     <div class="result-item" id="car-<?= $index ?>" onclick="showCarDetails(<?= $voiture['vehicule_id'] ?>)">
                         <img src="<?= htmlspecialchars(json_decode($voiture['photos'])[0]) ?>" alt="<?= htmlspecialchars($voiture['marque']) ?>" class="result-image">
                         <div class="result-details">
@@ -202,6 +190,7 @@ if ($location || $depart || $retour) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
     </main>
@@ -244,6 +233,9 @@ if ($location || $depart || $retour) {
         </div>
     </footer>
     <script>
+        document.querySelector('#price-range').addEventListener('input', function() {
+        document.getElementById('price-value').textContent = this.value + '$';
+    });
         const cars = <?php echo json_encode($voitures); ?>;
     </script>
     <script src="index.js"></script>
