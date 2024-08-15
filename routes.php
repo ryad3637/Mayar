@@ -709,12 +709,13 @@ get('/api/getVehicules', function() {
 // chemin routes
 
 get('/', function() use ($isLoggedIn, $profilePhoto) {
-    include 'index.php';
+    include 'Accueil.php';
 });
 get('/index.php', function() use ($isLoggedIn, $profilePhoto) {
     include 'index.php';
 });
-get('/', 'index.php');
+get('/', 'Accueil.php');
+get('/Accueil.php', 'Accueil.php');
 get('/index.php', 'index.php');
 get('/PageConnexion.php', 'PageConnexion.php');
 get('/Location.php', 'location.php');

@@ -1,11 +1,26 @@
 <?php
 require_once 'config.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header('Location: PageConnexion.php');
-    exit();
+$isLoggedIn = isset($_SESSION['user_id']);
+$profilePhoto = 'default_photo_path.jpg';
+$prenom = 'Guest';
+$nom = '';
+
+if ($isLoggedIn) {
+    $userId = $_SESSION['user_id'];
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("SELECT * FROM Utilisateurs WHERE user_id = :user_id");
+    $stmt->execute(['user_id' => $userId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        $profilePhoto = $user['photo_profil'] ?? 'default_photo_path.jpg';
+        $prenom = htmlspecialchars($user['prenom']);
+        $nom = htmlspecialchars($user['nom']);
+    }
 }
+
+
+
 
 $userId = $_SESSION['user_id'];
 $pdo = getConnection();
@@ -19,7 +34,7 @@ $stmt->execute(['user_id' => $userId]);
 $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $isLoggedIn = isset($_SESSION['user_id']);
-$profilePhoto = $isLoggedIn ? ($_SESSION['photo_profil'] ?? 'image/default_photo_path.jpg') : 'image/default_photo_path.jpg';
+
 ?>
 
 <!DOCTYPE html>
@@ -41,20 +56,28 @@ $profilePhoto = $isLoggedIn ? ($_SESSION['photo_profil'] ?? 'image/default_photo
                 <div class="bar"></div>
                 <div class="bar"></div>
             </button>
-            <nav class="menu" id="menu">
-                <?php if ($isLoggedIn): ?>
-                    <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Photo de profil" class="profile-photo">
-                    <a href="Compte.php">Compte</a>
-                    <a href="Messages.php">Messages</a>
-                    <a href="Reservations.php">Mes réservations</a>
-                    <a href="EnregistrerVehicule.php">Ajouter véhicule</a>
-                    <div class="separator"></div>
-                    <a href="/deconnexion">Déconnexion</a>
-                <?php else: ?>
-                    <a href="PageConnexion.php">Connexion</a>
-                    <a href="PageInscription.php">Inscription</a>
-                <?php endif; ?>
-            </nav>
+            <nav class="menu">
+        <?php if ($isLoggedIn): ?>
+            <div class="profile-info">
+            <img src="<?php echo $profilePhoto; ?>" alt="Photo de profil" class="profile-photo-small">
+            <span><?php echo $prenom . ' ' . $nom . '.'; ?></span>
+        </div>
+            <a href="MonCompte.php">Compte</a>
+            <a href="chat">Messages</a>
+            <a href="Hreservation.php">Mes réservations</a>
+            <a href="Location.php">Ajouter véhicule</a>
+            <div class="separator"></div>
+            <a href="/deconnexion">Déconnexion</a>
+        <?php else: ?>
+            <a href="index.php">Accueil</a>
+            <a href="PageConnexion.php">Connexion</a>
+            <a href="#">Inscription</a>
+            <a href="#">Devenir Hôte</a>
+            <div class="separator"></div>
+            <a href="#">Support</a>
+        <?php endif; ?>
+    </nav>
+
         </div>
     </header>
     
@@ -111,8 +134,8 @@ $profilePhoto = $isLoggedIn ? ($_SESSION['photo_profil'] ?? 'image/default_photo
                 <h3>Suivez-nous</h3>
                 <ul class="social-media">
                     <li><a href="#"><img src="image/facebook-icon.png" alt="Facebook"></a></li>
-                    <li><a href="#"><img src="image/twitter-icon.png" alt="Twitter"></a></li>
-                    <li><a href="#"><img src="image/instagram-icon.png" alt="Instagram"></a></li>
+                    <li><a href="#"><img src="image/twitter-logo-black.png" alt="Twitter"></a></li>
+                    <li><a href="#"><img src="image/instagram-icon.png.webp" alt="Instagram"></a></li>
                 </ul>
             </div>
         </div>

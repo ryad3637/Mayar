@@ -53,3 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
         cars.forEach((car, index) => addCar(car, index));
     }
 });
+
+function toggleMenu() {
+    const menu = document.querySelector('nav.menu');
+    menu.classList.toggle('open');
+}

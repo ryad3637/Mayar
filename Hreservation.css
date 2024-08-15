@@ -35,6 +35,21 @@
     align-self: center;
 }
 
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.profile-photo-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 /* Show the menu when the 'open' class is added */
 .menu.open {
     right: 20px;
@@ -112,7 +127,7 @@
 }
 
 .footer-section {
-    flex: 1;
+   
     margin: 0 20px;
 }
 
@@ -142,4 +157,20 @@
     background-color: #e9ecef;
     padding: 10px 0;
     text-align: center;
+}
+
+.social-media {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.social-media img {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s;
+}
+
+.social-media img:hover {
+    transform: scale(1.1);
 }

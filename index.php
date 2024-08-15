@@ -2,10 +2,9 @@
 require_once 'config.php';
 
 $isLoggedIn = isset($_SESSION['user_id']);
-$profilePhoto = 'default_photo_path.jpg'; // Chemin par défaut de la photo de profil
+$profilePhoto = 'default_photo_path.jpg';
 $prenom = 'Guest';
 $nom = '';
-$nomInitial = '';
 
 if ($isLoggedIn) {
     $userId = $_SESSION['user_id'];
@@ -20,7 +19,6 @@ if ($isLoggedIn) {
     }
 }
 
-
 $pdo = getConnection();
 
 $location = isset($_GET['location']) ? $_GET['location'] : '';
@@ -29,27 +27,48 @@ $retour = isset($_GET['retour']) ? $_GET['retour'] : '';
 
 $voitures = [];
 
-if ($location && $depart && $retour) {
-    $stmt = $pdo->prepare("
+if ($location || $depart || $retour) {
+    $query = "
         SELECT v.*
         FROM Vehicules v
-        WHERE v.adresse LIKE :location
-        AND v.disponibilite = 1
-        AND NOT EXISTS (
+        WHERE v.disponibilite = 1
+    ";
+
+    $conditions = [];
+    $params = [];
+
+    if ($location) {
+        $conditions[] = "v.adresse LIKE :location";
+        $params['location'] = '%' . $location . '%';
+    }
+
+    if ($depart && $retour) {
+        $conditions[] = "NOT EXISTS (
             SELECT 1 
             FROM reservations r 
             WHERE r.vehicule_id = v.vehicule_id
-            AND (
-                (r.start_date <= :retour AND r.end_date >= :depart)
-            )
-        )
-    ");
-    $stmt->execute([
-        'location' => '%' . $location . '%',
-        'depart' => $depart,
-        'retour' => $retour
-    ]);
+            AND (r.start_date <= :retour AND r.end_date >= :depart)
+        )";
+        $params['depart'] = $depart;
+        $params['retour'] = $retour;
+    }
 
+    if ($conditions) {
+        $query .= " AND " . implode(' AND ', $conditions);
+    }
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+
+    $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    // Si aucun champ n'est rempli, on affiche tous les véhicules disponibles
+    $stmt = $pdo->prepare("
+        SELECT v.*
+        FROM Vehicules v
+        WHERE v.disponibilite = 1
+    ");
+    $stmt->execute();
     $voitures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>

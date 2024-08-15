@@ -1,16 +1,23 @@
 <?php
 
 
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
-    header('Location: PageConnexion.php');
-    exit();
-}
-
-
 $isLoggedIn = isset($_SESSION['user_id']);
-$profilePhoto = $isLoggedIn ? ($_SESSION['photo_profil'] ?? 'default_photo_path.jpg') : '';
+$profilePhoto = 'default_photo_path.jpg';
+$prenom = 'Guest';
+$nom = '';
 
+if ($isLoggedIn) {
+    $userId = $_SESSION['user_id'];
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("SELECT * FROM Utilisateurs WHERE user_id = :user_id");
+    $stmt->execute(['user_id' => $userId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        $profilePhoto = $user['photo_profil'] ?? 'default_photo_path.jpg';
+        $prenom = htmlspecialchars($user['prenom']);
+        $nom = htmlspecialchars($user['nom']);
+    }
+}
 
 
 
@@ -48,17 +55,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </header>
     <nav class="menu" id="menu">
     <?php if ($isLoggedIn): ?>
-            <img src="<?php echo htmlspecialchars($profilePhoto ?? 'default_photo_path.jpg'); ?>" alt="Photo de profil" class="profile-photo">
-            <a href="Compte.php">Compte</a>
-            <a href="Messages.php">Messages</a>
-            <a href="Reservations.php">Mes réservations</a>
-            <a href="EnregistrerVehicule.php">Ajouter véhicule</a>
+            <div class="profile-info">
+            <img src="<?php echo $profilePhoto; ?>" alt="Photo de profil" class="profile-photo-small">
+            <span><?php echo $prenom . ' ' . $nom . '.'; ?></span>
+        </div>
+            <a href="MonCompte.php">Compte</a>
+            <a href="chat">Messages</a>
+            <a href="Hreservation.php">Mes réservations</a>
+            <a href="Location.php">Ajouter véhicule</a>
             <div class="separator"></div>
             <a href="/deconnexion">Déconnexion</a>
-            <?php else: ?>
+        <?php else: ?>
+            <a href="index.php">Accueil</a>
             <a href="PageConnexion.php">Connexion</a>
-            <a href="PageInscription.php">Inscription</a>
-            <?php endif; ?>
+            <a href="#">Inscription</a>
+            <a href="#">Devenir Hôte</a>
+            <div class="separator"></div>
+            <a href="#">Support</a>
+        <?php endif; ?>
     </nav>
     
     <main>

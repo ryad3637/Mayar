@@ -1,12 +1,21 @@
 <?php
+
+
 $car_name = isset($_GET['car_name']) ? $_GET['car_name'] : 'Unknown';
 $daily_price = isset($_GET['daily_price']) ? $_GET['daily_price'] : '0';
-$start_date = new DateTime($_GET['start_date']);
-$end_date = new DateTime($_GET['end_date']);
+$start_date = new DateTime(isset($_GET['start_date']) ? $_GET['start_date'] : 'now');
+$end_date = new DateTime(isset($_GET['end_date']) ? $_GET['end_date'] : 'now');
 $days = $end_date->diff($start_date)->days;
 $subtotal = $days * $daily_price + 50;
 $taxes = $subtotal * 0.15;
 $total = $subtotal * 1.15;
+
+$user_id = $_SESSION['user_id']; // Assuming user is logged in and their ID is stored in session
+$vehicule_id = isset($_GET['car_id']) ? $_GET['car_id'] : null; // Use 'car_id' instead of 'vehicule_id'
+
+if (!$vehicule_id) {
+    die("Erreur : le car_id est manquant.");
+}
 ?>
 
 <!DOCTYPE html>
@@ -177,6 +186,15 @@ $total = $subtotal * 1.15;
             
         </div>
     </div>
+    <script>
+        // Here we embed PHP values directly into JavaScript
+        const user_id = <?php echo json_encode($user_id); ?>;
+        const vehicule_id = <?php echo json_encode($vehicule_id); ?>;
+        const start_date = <?php echo json_encode($start_date->format('Y-m-d')); ?>;
+        const end_date = <?php echo json_encode($end_date->format('Y-m-d')); ?>;
+      </script>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/imask/3.4.0/imask.min.js"></script>
     <script src="Paiement.js"></script>
 </body>
